@@ -1,0 +1,40 @@
+version: "3"
+services:
+  mysql-docker:
+    image: arm64v8/mariadb
+    ports:
+      - "3309:3306"
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_ROOT_PASSWORD: mysql_jb
+      MYSQL_DATABASE: journey_buddy_db
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD: mysql_jb
+    container_name: "jb-docker-mysql"
+    # env_file: .mysql_env
+    volumes:
+      - /var/lib/mysql
+      #- /Users/xi-jjun/Database-docker/data/mysql:/var/lib/mysql
+
+#  mongo-docker:
+#    image: arm64v8/mongo
+#    ports:
+#      - "${MONGO_PORT}:27017"
+#    volumes:
+#      - /Users/wool/Database-docker/data/mongo:/data/db
+#    container_name: "jb-docker-mongodb"
+#    env_file:
+#      - .mongo_env
+
+  redis-docker:
+    image: redis:latest
+    command: redis-server --requirepass redis_jb --port 6379
+    container_name: "jb-docker-redis"
+    volumes:
+      - /var/lib/redis
+      #- /Users/wool/Database-docker/data/redis:/data
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
