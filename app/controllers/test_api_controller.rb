@@ -6,4 +6,13 @@ class TestApiController < ApplicationController
     puts "find data=#{data}"
     puts "check test_def end\n"
   end
+
+  def send_post_data
+    file = params[:file]
+    file_info = { file: file, extension: File.extname(file.original_filename) }
+
+    result = S3BucketManager.upload_file_to_s3(file_info)
+
+    render json: result
+  end
 end
