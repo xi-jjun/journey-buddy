@@ -1,7 +1,7 @@
 version: "3"
 services:
   mysql-docker:
-    image: arm64v8/mariadb
+    image: arm64v8/mysql:8.0
     ports:
       - "3309:3306"
     environment:
@@ -27,7 +27,7 @@ services:
 #      - .mongo_env
 
   redis-docker:
-    image: redis:latest
+    image: redis:7.0.12
     command: redis-server --requirepass redis_jb --port 6379
     container_name: "jb-docker-redis"
     volumes:
