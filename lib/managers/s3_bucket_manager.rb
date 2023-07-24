@@ -14,7 +14,7 @@ class S3BucketManager
       raise 'S3 upload fail' unless result == true
 
       {
-        image_url: "#{S3_BASE_URL}/#{file_name}",
+        file_url: "#{S3_BASE_URL}/#{file_name}",
         created_at: Time.now
       }
     rescue StandardError => e

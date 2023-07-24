@@ -8,7 +8,13 @@ gem "rails", "~> 7.0.6"
 
 gem "aws-sdk-s3"
 
-gem 'rack-cors'
+gem 'rack-cors', "~> 2.0.1"
+
+gem 'devise', "~> 4.9.0"
+
+gem 'oj', "~> 3.15.0"
+
+gem 'ruby-openai'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
