@@ -10,4 +10,10 @@ class Journey < ApplicationRecord
     TRAVELING = 2
     COMPLETED = 3
   end
+
+  class << self
+    def valid_status?(status)
+      [Status::READY_TO_ONBOARDING, Status::TRAVELING, Status::COMPLETED].include?(status)
+    end
+  end
 end

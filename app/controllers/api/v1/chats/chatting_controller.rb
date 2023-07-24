@@ -36,7 +36,7 @@ class Api::V1::Chats::ChattingController < ApplicationController
       Chat.create!(writer: gpt_chat[:writer], content: gpt_chat[:content], content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
     end
 
-    Chat.write_cache_for_user_journey_chats_by_joureny_id(params[:journey_id], chat_context)
+    Chat.write_cache_for_user_journey_chats_by_journey_id(params[:journey_id], chat_context)
 
     render json: { code: 200, answer: answer }
   rescue StandardError => e
