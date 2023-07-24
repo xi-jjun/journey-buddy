@@ -36,7 +36,7 @@ class Chat < ApplicationRecord
 
     # @param [Integer] journey_id 여행 id
     # @param [Hashes] chat_hashes 대화(hash) 목록
-    def write_cache_for_user_journey_chats_by_joureny_id(journey_id, chat_hashes)
+    def write_cache_for_user_journey_chats_by_journey_id(journey_id, chat_hashes)
       key, options = cache_info_by_journey_id(journey_id)
       Rails.cache.write(key, chat_hashes, options)
     end
