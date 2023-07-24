@@ -34,3 +34,4 @@
 journey-buddy.iml
 .idea
 .env
+/db/schema.rb
