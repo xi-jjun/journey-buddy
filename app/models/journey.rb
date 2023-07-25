@@ -6,7 +6,7 @@ class Journey < ApplicationRecord
   has_many :chats
 
   module Status
-    READY_TO_ONBOARDING = 1
+    PREPARING = 1
     TRAVELING = 2
     COMPLETED = 3
   end
@@ -30,7 +30,11 @@ class Journey < ApplicationRecord
     end
 
     def valid_status?(status)
-      [Status::READY_TO_ONBOARDING, Status::TRAVELING, Status::COMPLETED].include?(status)
+      [Status::PREPARING, Status::TRAVELING, Status::COMPLETED].include?(status)
+    end
+
+    def preparing?(journey_hash)
+      journey_hash[:status] == Status::PREPARING
     end
 
     private
