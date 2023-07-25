@@ -10,7 +10,7 @@ class Api::V1::Journeys::JourneyController < ApplicationController
   def journey_detail
     raise 'invalid parameter' unless params[:journey_id].present?
 
-    @journey = Journey.find_by(id: params[:journey_id])
+    @journey = Journey.fetch_journey_hash_by_id(params[:journey_id])
     raise 'journey not founded' unless @journey.present?
 
     render json: { code: 200, journey: @journey }
