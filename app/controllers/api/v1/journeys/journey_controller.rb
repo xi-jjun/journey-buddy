@@ -1,6 +1,6 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
   def start_journey
-    Journey.create!(title: params[:title], status: Journey::Status::READY_TO_ONBOARDING, user_id: params[:user_id])
+    Journey.create!(title: params[:title], status: Journey::Status::PREPARING, user_id: params[:user_id])
     render json: { code: 200, message: 'success' }
   rescue StandardError => e
     Rails.logger.error("ready_to_journey api fail")
@@ -20,7 +20,7 @@ class Api::V1::Journeys::JourneyController < ApplicationController
   end
 
   def check_traveling
-    @journey = Journey.where(user_id: params[:user_id], status: [Journey::Status::READY_TO_ONBOARDING, Journey::Status::TRAVELING]).first
+    @journey = Journey.where(user_id: params[:user_id], status: [Journey::Status::PREPARING, Journey::Status::TRAVELING]).first
     render json: { code: 200, traveling: @journey.present? }
   end
 
