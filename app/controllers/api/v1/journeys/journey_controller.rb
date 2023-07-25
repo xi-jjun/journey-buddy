@@ -1,5 +1,5 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
-  def ready_to_journey
+  def start_journey
     Journey.create!(title: params[:title], status: Journey::Status::READY_TO_ONBOARDING, user_id: params[:user_id])
     render json: { code: 200, message: 'success' }
   rescue StandardError => e
