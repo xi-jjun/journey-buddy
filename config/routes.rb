@@ -15,7 +15,7 @@ Rails.application.routes.draw do
         controller 'journey' do
           get '/check-traveling', to: 'journey#check_traveling'
           get '/:journey_id', to: 'journey#journey_detail'
-          post '/', to: 'journey#ready_to_journey'
+          post '/', to: 'journey#start_journey'
           patch '/:journey_id/status', to: 'journey#journey_status_update'
         end
       end
