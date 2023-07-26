@@ -18,6 +18,7 @@ class Api::V1::Chats::PersonalityController < ApplicationController
     end
     prepared_journey = Journey.find_by(id: @journey[:id])
     prepared_journey.update!(status: Journey::Status::TRAVELING)
+    @journey = Journey.fetch_journey_hash_by_id(@journey[:id], force: true)
 
     render json: { code: 200, message: 'success' }
   rescue StandardError => e
