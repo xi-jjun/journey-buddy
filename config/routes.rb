@@ -24,6 +24,15 @@ Rails.application.routes.draw do
           patch '/:journey_id/status', to: 'journey#journey_status_update'
         end
       end
+
+      namespace :quests do
+        controller 'quest' do
+          get '/missions', to: 'quest#user_missions'
+          post '/mission', to: 'quest#generate_random_mission'
+          post '/missioin/complete', to: 'quest#complete_mission'
+          patch '/missioin/reject', to: 'quest#reject_mission'
+        end
+      end
     end
   end
 
