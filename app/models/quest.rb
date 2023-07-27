@@ -1,5 +1,5 @@
 class Quest < ApplicationRecord
-  has_one :reward_badge
+  belongs_to :reward_badge
   has_many :missions
 
   module Cache
