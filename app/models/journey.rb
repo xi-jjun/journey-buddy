@@ -4,6 +4,7 @@ class Journey < ApplicationRecord
   has_many :personalities, through: :buddy_personalities
   has_many :journey_archives
   has_many :chats
+  has_many :missions
 
   module Status
     PREPARING = 1

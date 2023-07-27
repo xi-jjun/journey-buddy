@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :journeys
   has_many :journey_archives
+  has_many :missions
 
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
