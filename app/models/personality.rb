@@ -1,6 +1,8 @@
 class Personality < ApplicationRecord
   has_many :buddy_personalities
   has_many :journeys, through: :buddy_personalities
+  has_many :user_personalities
+  has_many :users, through: :user_personalities
 
   module Cache
     PERSONALITY_BY_ID = {

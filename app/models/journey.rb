@@ -1,4 +1,6 @@
 class Journey < ApplicationRecord
+  after_update :refresh_cache
+
   belongs_to :user
   has_many :buddy_personalities
   has_many :personalities, through: :buddy_personalities
@@ -14,7 +16,7 @@ class Journey < ApplicationRecord
 
   module Cache
     JOURNEY_BY_ID = {
-      key: 'journey_h_by_id_%{id}',
+      key: 'journey_h_by_id_%{journey_id}',
       options: { expires_in: 7.days, raw: false }
     }
   end
@@ -30,6 +32,11 @@ class Journey < ApplicationRecord
       end
     end
 
+    def write_journey_hash_cache_by_id(journey_hash)
+      key, options = cache_info_by_id(journey_hash[:id])
+      Rails.cache.write(key, journey_hash, options)
+    end
+
     def valid_status?(status)
       [Status::PREPARING, Status::TRAVELING, Status::COMPLETED].include?(status)
     end
@@ -41,9 +48,16 @@ class Journey < ApplicationRecord
     private
 
     def cache_info_by_id(id)
-      key = format(Cache::JOURNEY_BY_ID[:key], id: id)
+      key = format(Cache::JOURNEY_BY_ID[:key], journey_id: id)
       options = Cache::JOURNEY_BY_ID[:options]
       [key, options]
     end
+  end
+
+  private
+
+  def refresh_cache
+    journey_hash = self.attributes.symbolize_keys
+    Journey.write_journey_hash_cache_by_id(journey_hash)
   end
 end
