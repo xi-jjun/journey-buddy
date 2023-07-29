@@ -1,0 +1,38 @@
+class Api::V1::Users::PersonalityController < ApplicationController
+  before_action :get_user_info_from_request
+
+  # 사용자의 성향을 설정하는 기능
+  # @param [String] personalities 1,2,3,4... 콤마로 분리된 문자열
+  def create_user_personality_settings
+    user_hash = @user.attributes.symbolize_keys
+
+    personality_ids = params[:personalities].split(',').map(&:to_i)
+    @personality_hashes = Rails.cache.read_multi(*personality_ids, raw: true)
+    @personality_hashes = Personality.where(id: personality_ids).map { |personality| personality.attributes.symbolize_keys } unless @personality_hashes.present?
+    raise 'invalid parameter' unless @personality_hashes.present?
+
+    @personality_hashes.each do |personality_hash|
+      UserPersonality.create!(user_id: user_hash[:id], personality_id: personality_hash[:id])
+    end
+
+    render json: { code: 200, message: 'success' }
+  rescue StandardError => e
+    Rails.logger.warn("fail user_personality_settings api error=#{e.message}|backtrace=#{e.backtrace}")
+    render json: { code: 400, message: 'fail' }, status: :bad_request
+  end
+
+  # 사용자 ID의 성향을 가져오는 API
+  # @param [Integer] user_id 사용자id
+  def get_user_personalities
+    user_personalities = @user.personalities
+    raise 'user personalitiy not founded' unless user_personalities.present?
+
+    user_personalitiy_hashes = user_personalities.map { |user_personality| user_personality.attributes.symbolize_keys }
+
+    # TODO : 일단 모든 정보 보내고, 나중에 필요하다면 필수적인 정보만 보내기
+    render json: { code: 200, user_personalities: user_personalitiy_hashes }
+  rescue StandardError => e
+    Rails.logger.warn("fail get_user_personalities api error=#{e.message}|backtrace=#{e.backtrace}")
+    render json: { code: 400, message: 'fail' }, status: :bad_request
+  end
+end
