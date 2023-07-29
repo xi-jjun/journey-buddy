@@ -25,6 +25,13 @@ Rails.application.routes.draw do
         end
       end
 
+      namespace :users do
+        controller 'personality' do
+          get '/:user_id/personalities', to: 'personality#get_user_personalities'
+          post '/personalities', to: 'personality#create_user_personality_settings'
+        end
+      end
+
       namespace :quests do
         controller 'quest' do
           get '/missions', to: 'quest#user_missions'
