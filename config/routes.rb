@@ -10,10 +10,14 @@ Rails.application.routes.draw do
           post '/', to: 'chatting#send_chat'
         end
 
-        controller 'personality' do
-          get '/buddy-role', to: 'personality#chat_role_list'
-          post '/buddy-role', to: 'personality#chat_role_setting'
+        controller 'buddy_setting' do
+          post '/buddy', to: 'buddy_setting#init_user_buddy_settings'
         end
+
+        # controller 'personality' do
+        #   get '/buddy-role', to: 'personality#chat_role_list'
+        #   post '/buddy-role', to: 'personality#chat_role_setting'
+        # end
       end
 
       namespace :journeys do
