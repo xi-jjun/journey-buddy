@@ -1,5 +1,5 @@
 class Api::V1::Chats::ChattingController < ApplicationController
-  before_action :set_params_for_chat, only: [:get_all_chats, :send_message]
+  before_action :set_params_for_chat, only: [:get_all_chats, :send_chat]
 
   module FileType
     IMAGE = '사진'
