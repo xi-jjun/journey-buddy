@@ -13,4 +13,10 @@ class User < ApplicationRecord
     KAKAO = 2
     GOOGLE = 3
   end
+
+  module Status
+    ACTIVE = 1
+    DEACTIVE = 2
+    BLOCKED = 3
+  end
 end
