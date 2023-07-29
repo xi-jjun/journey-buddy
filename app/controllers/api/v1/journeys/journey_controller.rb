@@ -1,10 +1,12 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
   def start_journey
-    Journey.create!(title: params[:title], status: Journey::Status::PREPARING, user_id: params[:user_id])
-    render json: { code: 200, message: 'success' }
+    raise '이미 진행중이거나 준비중인 여행이 존재합니다.' if Journey.where(user_id: params[:user_id], status: [Journey::Status::PREPARING, Journey::Status::TRAVELING]).present?
+
+    journey = Journey.create!(title: params[:title], status: Journey::Status::PREPARING, user_id: params[:user_id])
+    render json: { code: 200, message: 'success', journey_id: journey.id }
   rescue StandardError => e
-    Rails.logger.error("ready_to_journey api fail")
-    render json: { code: 400, message: 'fail' }, status: :bad_request
+    Rails.logger.error("fail start_journey api error=#{e.message} | backtrace=#{e.backtrace}")
+    render json: { code: 400, message: e.message }, status: :bad_request
   end
 
   def journey_detail
@@ -15,8 +17,8 @@ class Api::V1::Journeys::JourneyController < ApplicationController
 
     render json: { code: 200, journey: @journey }
   rescue StandardError => e
-    Rails.logger.warn("journey_detail api fail")
-    render json: { code: 400, message: 'fail' }, status: :bad_request
+    Rails.logger.warn("fail journey_detail api error=#{e.message} | backtrace=#{e.backtrace}")
+    render json: { code: 400, message: e.message }, status: :bad_request
   end
 
   def check_traveling
