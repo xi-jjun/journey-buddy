@@ -1,5 +1,6 @@
 class Journey < ApplicationRecord
-  after_update :refresh_cache
+  after_create :write_cache
+  after_update :write_cache
 
   belongs_to :user
   has_many :buddy_personalities
@@ -56,7 +57,7 @@ class Journey < ApplicationRecord
 
   private
 
-  def refresh_cache
+  def write_cache
     journey_hash = self.attributes.symbolize_keys
     Journey.write_journey_hash_cache_by_id(journey_hash)
   end
