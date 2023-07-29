@@ -12,6 +12,8 @@ gem 'rack-cors', "~> 2.0.1"
 
 gem 'devise', "~> 4.9.0"
 
+gem 'jwt', "~> 2.7.1"
+
 gem 'oj', "~> 3.15.0"
 
 gem 'ruby-openai'
