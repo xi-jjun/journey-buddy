@@ -38,6 +38,9 @@ Rails.application.routes.draw do
 
         controller 'login' do
           post '/login', to: 'login#user_login'
+
+          get '/kakao/login', to: 'login#kakao_login_url'
+          get '/kakao/login/callback', to: 'login#kakao_login_callback'
         end
 
         controller 'personality' do
