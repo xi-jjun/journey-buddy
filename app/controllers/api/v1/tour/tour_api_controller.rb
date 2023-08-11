@@ -27,4 +27,8 @@ class Api::V1::Tour::TourApiController < ApplicationController
     Rails.logger.error("fail tour_list_by_geoloaction api error=#{e.message} | backtrace=#{e.backtrace}")
     render json: { tour_list: [] }, status: :bad_request
   end
+
+  def add_wishlist
+
+  end
 end
