@@ -3,6 +3,7 @@ class Journey < ApplicationRecord
   after_update :write_cache
 
   belongs_to :user
+  belongs_to :buddy
   has_many :buddy_personalities
   has_many :personalities, through: :buddy_personalities
   has_many :journey_archives
