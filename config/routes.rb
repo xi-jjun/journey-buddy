@@ -5,12 +5,12 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :chats do
-        controller 'chatting' do
+        controller :chatting do
           get '/', to: 'chatting#get_all_chats'
           post '/', to: 'chatting#send_chat'
         end
 
-        controller 'buddy_setting' do
+        controller :buddy_setting do
           post '/buddy', to: 'buddy_setting#init_user_buddy_settings'
         end
 
@@ -36,21 +36,21 @@ Rails.application.routes.draw do
           patch '/:user_id', to: 'user#update_info'
         end
 
-        controller 'login' do
+        controller :login do
           post '/login', to: 'login#user_login'
 
           get '/kakao/login', to: 'login#kakao_login_url'
           get '/kakao/login/callback', to: 'login#kakao_login_callback'
         end
 
-        controller 'personality' do
+        controller :personality do
           get '/:user_id/personalities', to: 'personality#get_user_personalities'
           post '/personalities', to: 'personality#create_user_personality_settings'
         end
       end
 
       namespace :quests do
-        controller 'quest' do
+        controller :quest do
           get '/missions', to: 'quest#user_missions'
           post '/mission', to: 'quest#generate_random_mission'
           post '/missioin/complete', to: 'quest#complete_mission'
