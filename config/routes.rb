@@ -57,6 +57,12 @@ Rails.application.routes.draw do
           patch '/missioin/reject', to: 'quest#reject_mission'
         end
       end
+
+      namespace :tour do
+        controller :tour_api do
+          get '/list-by-geolocation', to: 'tour_api#tour_list_by_geoloaction'
+        end
+      end
     end
   end
 
