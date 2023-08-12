@@ -45,7 +45,7 @@ Rails.application.routes.draw do
 
         controller :personality do
           get '/:user_id/personalities', to: 'personality#get_user_personalities'
-          post '/personalities', to: 'personality#create_user_personality_settings'
+          post '/:user_id/personalities', to: 'personality#create_user_personality_settings'
         end
       end
 
