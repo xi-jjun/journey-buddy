@@ -2,6 +2,8 @@ class Buddy < ApplicationRecord
   after_create :write_cache
   after_update :write_cache
 
+  has_one :journey
+
   module Gender
     MAN = 1
     WOMAN = 2
