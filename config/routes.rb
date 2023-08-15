@@ -28,6 +28,10 @@ Rails.application.routes.draw do
           patch '/:journey_id', to: 'journey#update_journey'
           patch '/:journey_id/status', to: 'journey#journey_status_update'
         end
+
+        controller :buddy do
+          get '/:journey_id/buddy', to: 'buddy#buddy_detail'
+        end
       end
 
       namespace :users do
