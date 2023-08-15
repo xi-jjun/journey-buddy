@@ -1,5 +1,5 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
-  before_action :validate_jwt, only: [:start_journey]
+  before_action :validate_jwt, only: [:start_journey, :update_journey]
 
   # 여행 시작 API
   def start_journey
@@ -26,6 +26,25 @@ class Api::V1::Journeys::JourneyController < ApplicationController
     render json: { code: 200, journey: @journey }
   rescue StandardError => e
     Rails.logger.warn("fail journey_detail api error=#{e.message} | backtrace=#{e.backtrace}")
+    render json: { code: 400, message: e.message }, status: :bad_request
+  end
+
+  def update_journey
+    user_hash = @user.attributes.symbolize_keys
+    journey = Journey.find_by(id: params[:journey_id])
+    raise '해당 여행정보가 존재하지 않습니다.' unless journey.present?
+
+    if journey.user_id != user_hash[:id]
+      render json: { code: 403, message: '해당 유저와 여행정보가 일치하지 않습니다.' }, status: :bad_request
+      return
+    end
+
+    journey.title = params[:title] if params[:title].present?
+    journey.save!
+
+    render json: { code: 200, buddy_id: journey.buddy_id }
+  rescue StandardError => e
+    Rails.logger.error("fail update_journey api error=#{e.message} | backtrace=#{e.backtrace}")
     render json: { code: 400, message: e.message }, status: :bad_request
   end
 
