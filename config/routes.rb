@@ -31,6 +31,7 @@ Rails.application.routes.draw do
 
         controller :buddy do
           get '/:journey_id/buddy', to: 'buddy#buddy_detail'
+          post '/:journey_id/init-buddy', to: 'buddy#journey_buddy_init_setting'
         end
       end
 
