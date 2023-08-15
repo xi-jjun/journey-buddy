@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
       namespace :journeys do
         controller 'journey' do
-          get '/check-traveling', to: 'journey#check_traveling'
+          get '/current', to: 'journey#current_user_journey'
           get '/:journey_id', to: 'journey#journey_detail'
           post '/', to: 'journey#start_journey'
           patch '/:journey_id', to: 'journey#update_journey'

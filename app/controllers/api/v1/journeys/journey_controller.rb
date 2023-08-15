@@ -1,5 +1,5 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
-  before_action :validate_jwt, only: [:start_journey, :update_journey]
+  before_action :validate_jwt, only: [:start_journey, :update_journey, :ongoing_user_journey]
 
   # 여행 시작 API
   def start_journey
@@ -48,9 +48,11 @@ class Api::V1::Journeys::JourneyController < ApplicationController
     render json: { code: 400, message: e.message }, status: :bad_request
   end
 
-  def check_traveling
-    @journey = Journey.where(user_id: params[:user_id], status: [Journey::Status::PREPARING, Journey::Status::TRAVELING]).first
-    render json: { code: 200, traveling: @journey.present? }
+  def current_user_journey
+    journey = Journey.where(user_id: @user.id, status: [Journey::Status::PREPARING, Journey::Status::TRAVELING]).first
+    journey_hash = journey.present? ? journey.attributes.symbolize_keys : {}
+
+    render json: { code: 200, journey: journey_hash }
   end
 
   def journey_status_update
