@@ -11,6 +11,8 @@ module JourneyBuddy
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.time_zone = 'Seoul'
+
     config.eager_load_paths += Dir["#{config.root}/lib/managers/**/"]
 
     config.middleware.insert_before(0, Rack::Cors) do
