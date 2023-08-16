@@ -29,7 +29,7 @@ class Chat < ApplicationRecord
     def fetch_all_chats_by_journey_id(journey_id, force: false)
       key, options = cache_info_by_journey_id(journey_id)
       Rails.cache.fetch(key, options.merge(force: force)) do
-        result = Oj.dump(Chat.select(:id, :writer, :content, :created_at).where(journey_id: journey_id).map(&:as_json))
+        result = Oj.dump(Chat.where(journey_id: journey_id).map(&:as_json))
         result.present? ? Oj.load(result, symbol_keys: true) : []
       end
     end
