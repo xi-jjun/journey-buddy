@@ -1,5 +1,5 @@
 class Api::V1::Journeys::JourneyController < ApplicationController
-  before_action :validate_jwt, only: [:start_journey, :update_journey, :ongoing_user_journey]
+  before_action :validate_jwt, only: [:start_journey, :update_journey, :current_user_journey]
 
   # 여행 시작 API
   def start_journey
