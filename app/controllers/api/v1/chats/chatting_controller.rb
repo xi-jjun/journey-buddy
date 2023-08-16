@@ -1,5 +1,6 @@
 class Api::V1::Chats::ChattingController < ApplicationController
-  before_action :set_params_for_chat, only: [:get_all_chats, :send_chat]
+  before_action :validate_jwt, only: [:send_chat]
+  before_action :set_params_for_chat, only: [:send_chat]
 
   module FileType
     IMAGE = '사진'
@@ -8,18 +9,32 @@ class Api::V1::Chats::ChattingController < ApplicationController
   end
 
   def get_all_chats
-    chats = Chat.fetch_all_chats_by_journey_id(@journey.id)
+    # chats = Chat.fetch_all_chats_by_journey_id(@journey.id)
+    @journey = Journey.includes(:buddy).find_by(id: params[:journey_id])
+    result = Oj.dump(Chat.where(journey_id: @journey.id).map(&:as_json))
+    chats = result.present? ? Oj.load(result, symbol_keys: true) : []
+
+    buddy_name = @journey.buddy.name
+    buddy_profile_image = @journey.buddy.profile_image_url
+    chats.each do |chat|
+      chat[:buddy_name] = buddy_name if chat[:writer] == Chat::Writer::ASSISTANT
+      chat[:buddy_profile_image] = buddy_profile_image
+      chat[:created_at] = chat[:created_at].to_datetime.strftime('%p %I:%M')
+    end
+
     render json: { code: 200, chats: chats }
   rescue StandardError => e
-    Rails.logger.error("get_all_chats error")
-    render json: { code: 400, message: 'fail to load chats' }, status: :bad_request
+    Rails.logger.error("fail get_all_chats api error=#{e.message} | backtrace=#{e.backtrace}")
+    render json: { code: 400, message: e.message }, status: :bad_request
   end
 
   def send_chat
-    chat_context = Chat.fetch_all_chats_by_journey_id(@journey.id)
+    # chat_context = Chat.fetch_all_chats_by_journey_id(@journey.id)
+    result = Oj.dump(Chat.where(journey_id: @journey.id).map(&:as_json))
+    chat_context = result.present? ? Oj.load(result, symbol_keys: true) : []
 
-    user_chat = { writer: @chat_role, content: @content }
-    chat_context << user_chat
+    user_send_chat = { writer: @chat_role, content: @content }
+    chat_context << user_send_chat
 
     answer = if @content_type == Chat::ContentType::TEXT
                ChatGptApiManager.request_answer_to_chat_gpt(chat_context)
@@ -31,37 +46,40 @@ class Api::V1::Chats::ChattingController < ApplicationController
     gpt_chat = { writer: Chat::Writer::ASSISTANT, content: answer }
     chat_context << gpt_chat
 
+    user_chat = ''
+    buddy_chat = ''
     ActiveRecord::Base.transaction do
-      Chat.create!(writer: user_chat[:writer], content: user_chat[:content], content_type: @content_type.to_i, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
-      Chat.create!(writer: gpt_chat[:writer], content: gpt_chat[:content], content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
+      user_chat = Chat.create!(writer: user_send_chat[:writer], content: user_send_chat[:content], content_type: @content_type.to_i, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
+      buddy_chat = Chat.create!(writer: gpt_chat[:writer], content: gpt_chat[:content], content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
     end
 
-    Chat.write_cache_for_user_journey_chats_by_journey_id(params[:journey_id], chat_context)
+    question = user_chat.attributes.symbolize_keys
+    buddy_answer = buddy_chat.attributes.symbolize_keys
+    # Chat.write_cache_for_user_journey_chats_by_journey_id(params[:journey_id], chat_context)
 
-    render json: { code: 200, answer: answer }
+    render json: { code: 200, question: question, answer: buddy_answer }
   rescue StandardError => e
-    Rails.logger.error("fail to answer user question error_message=#{e.message}, answer=#{answer}")
-    render json: { code: 400, message: 'send_chat error' }, status: :bad_request
+    Rails.logger.error("fail to answer user question error=#{e.message} | backtrace=#{e.backtrace}")
+    render json: { code: 400, message: e.message }, status: :bad_request
   end
 
   private
 
   def set_params_for_chat
-    @journey = Journey.find_by(id: params[:journey_id])
-    @user = User.find_by(id: params[:user_id])
+    @journey = Journey.find_by(user_id: @user.id, status: Journey::Status::TRAVELING)
     @chat_role = params[:chat_role].to_i
     @content_type = params[:content_type].to_i
     @content = case @content_type
                when Chat::ContentType::TEXT
                  params[:content]
                when Chat::ContentType::IMAGE || Chat::ContentType::VOICE
-                 @file_type = set_file_type
+                 @file_type = file_type_name
                  set_upload_file_and_get_content
                else
                  ''
                end
-    @latitude = params[:latitude]
-    @longitude = params[:longitude]
+    @latitude = params[:lat]
+    @longitude = params[:lng]
   end
 
   def set_upload_file_and_get_content
