@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
     token = request.headers[:Authorization]
     result = @jwt_service.valid_jwt?(token)
     @user = result[:user]
-    render json: { code: 403, message: '인증에 실패했습니다.' } unless result[:result] == true
+    raise '인증에 실패했습니다.' unless result[:result] == true
   end
 
   private
