@@ -64,6 +64,10 @@ class Api::V1::Journeys::JourneyController < ApplicationController
     render json: { code: 200, message: 'success' }
   end
 
+  def total_journey_count
+    render json: { code: 200, journey_count: Journey.all.count }
+  end
+
   private
 
   def already_traveling_or_preparing?
