@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       namespace :journeys do
         controller 'journey' do
           get '/current', to: 'journey#current_user_journey'
+          get '/count', to: 'journey#total_journey_count'
+          get '/:user_id/count', to: 'journey#total_user_journey_count'
           get '/:journey_id', to: 'journey#journey_detail'
           post '/', to: 'journey#start_journey'
           patch '/:journey_id', to: 'journey#update_journey'

@@ -64,6 +64,15 @@ class Api::V1::Journeys::JourneyController < ApplicationController
     render json: { code: 200, message: 'success' }
   end
 
+  def total_journey_count
+    render json: { code: 200, journey_count: Journey.all.count }
+  end
+
+  def total_user_journey_count
+    user_journey_cnt = Journey.where(user_id: params[:user_id]).count
+    render json: { code: 200, journey_count: user_journey_cnt }
+  end
+
   private
 
   def already_traveling_or_preparing?
