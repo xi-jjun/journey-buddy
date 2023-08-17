@@ -58,6 +58,7 @@ Rails.application.routes.draw do
 
         controller :journey do
           get '/:user_id/journeys', to: 'journey#total_user_journey'
+          get '/:user_id/journeys/:journey_id', to: 'journey#user_journey_history_detail'
         end
       end
 
