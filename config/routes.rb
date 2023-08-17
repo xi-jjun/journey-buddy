@@ -55,6 +55,10 @@ Rails.application.routes.draw do
           get '/:user_id/personalities', to: 'personality#get_user_personalities'
           post '/:user_id/personalities', to: 'personality#create_user_personality_settings'
         end
+
+        controller :journey do
+          get '/:user_id/journeys', to: 'journey#total_user_journey'
+        end
       end
 
       namespace :quests do
