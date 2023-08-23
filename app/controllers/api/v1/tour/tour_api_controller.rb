@@ -28,6 +28,34 @@ class Api::V1::Tour::TourApiController < ApplicationController
     render json: { tour_list: [] }, status: :bad_request
   end
 
+  def tour_detail
+    raise 'invalid parameter' unless params[:content_id]
+    # &contentId=2370202&firstImageYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y&serviceKey=%2FPvKvzuMr8vWXlkiPsxeuUh1FvqZg7h5ucYkj7qWlocEDHcdvmQm75H7xj0MKjcrjOvwq8oup877pPNfqgkhMg%3D%3D
+    base_url = 'https://apis.data.go.kr/B551011/KorService1/detailCommon1'
+    query_params = {
+      MobileOS: 'ETC',
+      MobileApp: 'JourneyBuddy',
+      contentId: params[:content_id],
+      defaultYN: 'Y',
+      firstImageYN: 'Y',
+      addrinfoYN: 'Y',
+      mapinfoYN: 'Y',
+      overviewYN: 'Y',
+      serviceKey: SERVICE_API_KEY,
+      _type: 'json'
+    }
+
+    response_body_hash = get_request(base_url, query_params: query_params)
+    raise 'empty tour detail response' unless response_body_hash.present?
+
+    tour_hash = response_body_hash[:items].present? ? response_body_hash[:items][:item][0] : {}
+
+    render json: { code: 200, tour_detail: tour_hash }
+  rescue StandardError => e
+    Rails.logger.error("fail tour_detail api error=#{e.message} | backtrace=#{e.backtrace.slice(0, 5)}")
+    render json: { code: 400, error_message: e.message, tour_detail: {} }, status: :bad_request
+  end
+
   def add_wishlist
 
   end
