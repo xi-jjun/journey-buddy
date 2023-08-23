@@ -29,6 +29,14 @@ class Api::V1::Chats::ChattingController < ApplicationController
   end
 
   def send_chat
+    if @content == '/여행끝'
+      @journey.update!(status: Journey::Status::COMPLETED)
+      Chat.create!(writer: Chat::Writer::USER, content: @content, content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
+      Chat.create!(writer: Chat::Writer::ASSISTANT, content: '함께 여행해서 즐거웠어! 다음에 또 보자', content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id)
+      render json: { code: 200 }
+      return
+    end
+
     # chat_context = Chat.fetch_all_chats_by_journey_id(@journey.id)
     result = Oj.dump(Chat.where(journey_id: @journey.id).map(&:as_json))
     chat_context = result.present? ? Oj.load(result, symbol_keys: true) : []
@@ -50,7 +58,7 @@ class Api::V1::Chats::ChattingController < ApplicationController
     buddy_chat = ''
     ActiveRecord::Base.transaction do
       user_chat = Chat.create!(writer: user_send_chat[:writer], content: user_send_chat[:content], content_type: @content_type.to_i, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
-      buddy_chat = Chat.create!(writer: gpt_chat[:writer], content: gpt_chat[:content], content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
+      buddy_chat = Chat.create!(writer: gpt_chat[:writer], content: gpt_chat[:content], content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id)
     end
 
     question = user_chat.attributes.symbolize_keys
@@ -69,14 +77,13 @@ class Api::V1::Chats::ChattingController < ApplicationController
     @journey = Journey.find_by(user_id: @user.id, status: Journey::Status::TRAVELING)
     @chat_role = params[:chat_role].to_i
     @content_type = params[:content_type].to_i
-    @content = case @content_type
-               when Chat::ContentType::TEXT
+    @content = if @content_type == Chat::ContentType::TEXT
                  params[:content]
-               when Chat::ContentType::IMAGE || Chat::ContentType::VOICE
+               elsif Chat::ContentType::IMAGE || Chat::ContentType::VOICE
                  @file_type = file_type_name
                  set_upload_file_and_get_content
                else
-                 ''
+                 raise 'invalid content type'
                end
     @latitude = params[:lat]
     @longitude = params[:lng]
