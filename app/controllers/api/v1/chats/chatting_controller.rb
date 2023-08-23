@@ -29,6 +29,14 @@ class Api::V1::Chats::ChattingController < ApplicationController
   end
 
   def send_chat
+    if @content == '/여행끝'
+      @journey.update!(status: Journey::Status::COMPLETED)
+      Chat.create!(writer: Chat::Writer::USER, content: @content, content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id, latitude: @latitude, longitude: @longitude)
+      Chat.create!(writer: Chat::Writer::ASSISTANT, content: '함께 여행해서 즐거웠어! 다음에 또 보자', content_type: Chat::ContentType::TEXT, journey_id: @journey.id, user_id: @user.id)
+      render json: { code: 200 }
+      return
+    end
+
     # chat_context = Chat.fetch_all_chats_by_journey_id(@journey.id)
     result = Oj.dump(Chat.where(journey_id: @journey.id).map(&:as_json))
     chat_context = result.present? ? Oj.load(result, symbol_keys: true) : []
