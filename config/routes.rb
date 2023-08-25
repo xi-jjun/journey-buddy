@@ -74,6 +74,7 @@ Rails.application.routes.draw do
       namespace :tour do
         controller :tour_api do
           get '/list-by-geolocation', to: 'tour_api#tour_list_by_geoloaction'
+          get '/:content_id', to: 'tour_api#tour_detail'
         end
       end
     end
