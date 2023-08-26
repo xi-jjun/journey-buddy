@@ -54,6 +54,7 @@ Rails.application.routes.draw do
         controller :personality do
           get '/:user_id/personalities', to: 'personality#get_user_personalities'
           post '/:user_id/personalities', to: 'personality#create_user_personality_settings'
+          delete '/:user_id/personalities', to: 'personality#reset_user_personality'
         end
 
         controller :journey do
