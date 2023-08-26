@@ -52,6 +52,8 @@ class Api::V1::Journeys::JourneyController < ApplicationController
     journey = Journey.where(user_id: @user.id, status: [Journey::Status::PREPARING, Journey::Status::TRAVELING]).first
     journey_hash = journey.present? ? journey.attributes.symbolize_keys : {}
 
+    journey_hash[:buddy_name] = journey.buddy.name if journey&.buddy.present?
+
     render json: { code: 200, journey: journey_hash }
   end
 
