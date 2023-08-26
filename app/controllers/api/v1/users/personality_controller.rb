@@ -37,4 +37,19 @@ class Api::V1::Users::PersonalityController < ApplicationController
     Rails.logger.warn("fail get_user_personalities api error=#{e.message} | backtrace=#{e.backtrace}")
     render json: { code: 400, message: 'fail' }, status: :bad_request
   end
+
+  def reset_user_personality
+    user_personalities = @user.personalities
+    if user_personalities.blank?
+      render json: { code: 1, message: '유저 성향 테스트 정보가 존재하지 않습니다.' }
+      return
+    end
+
+    @user.personalities.delete_all
+
+    render json: { code: 200 }
+  rescue StandardError => e
+    Rails.logger.error("fail reset_user_personality api error=#{e.message}")
+    render json: { code: 400, message: e.message }, status: :bad_request
+  end
 end
