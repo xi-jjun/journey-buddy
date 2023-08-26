@@ -28,7 +28,12 @@ class Api::V1::Users::UserController < ApplicationController
   end
 
   def update_info
-    @user.update(params)
+    @user.name = params[:name] if params[:name]
+    @user.nickname = params[:nickname] if params[:nickname]
+    @user.email = params[:email] if params[:email]
+    @user.profile_image_url = params[:profile_image_url] if params[:profile_image_url]
+    raise '유저 정보 수정에 실패했습니다.' unless @user.save
+
     updated_user_hash = @user.attributes.symbolize_keys
     updated_user_hash.delete(:encrypted_password)
 
@@ -41,12 +46,12 @@ class Api::V1::Users::UserController < ApplicationController
   private
 
   def set_profile_image
-    if params[:profile_image_url].present?
-      file = params[:profile_image_url]
-      file_info = { file: file, extension: File.extname(file.original_filename) }
+    return unless params[:profile_image_url].present?
 
-      params[:profile_image_url] = S3BucketManager.upload_file_to_s3(file_info)[:file_url]
-    end
+    file = params[:profile_image_url]
+    file_info = { file: file, extension: File.extname(file.original_filename) }
+
+    params[:profile_image_url] = S3BucketManager.upload_file_to_s3(file_info)[:file_url]
   end
 
   def check_user

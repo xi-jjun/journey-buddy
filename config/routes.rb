@@ -38,7 +38,7 @@ Rails.application.routes.draw do
       end
 
       namespace :users do
-        controller 'user' do
+        controller :user do
           post '/', to: 'user#sign_up'
           get '/:user_id', to: 'user#details'
           patch '/:user_id', to: 'user#update_info'
@@ -54,6 +54,7 @@ Rails.application.routes.draw do
         controller :personality do
           get '/:user_id/personalities', to: 'personality#get_user_personalities'
           post '/:user_id/personalities', to: 'personality#create_user_personality_settings'
+          delete '/:user_id/personalities', to: 'personality#reset_user_personality'
         end
 
         controller :journey do
