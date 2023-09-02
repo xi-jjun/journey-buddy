@@ -18,15 +18,16 @@ class Api::V1::Users::LoginController < ApplicationController
   end
 
   def kakao_login_url
-    redirect_to @kakao_login_service.kakaotalk_login_redirect_url, allow_other_host: true
+    render json: { login_url: @kakao_login_service.kakaotalk_login_redirect_url }
   end
 
   def kakao_login_callback
     code = params[:code]
-    user_hash = @kakao_login_service.request_to_kakao_api_for_login(code)
-    token = @jwt_service.generate_jwt(user_hash)
+    result = @kakao_login_service.request_to_kakao_api_for_login(code)
+    token = @jwt_service.generate_jwt(result[:user_hash])
+    redirect_url = "#{result[:redirect_url]}?from=kakaoLogin&token=#{token}"
 
-    redirect_to "http://localhost:3000?token=#{token}", allow_other_host: true
+    redirect_to redirect_url, allow_other_host: true
   end
 
   private
