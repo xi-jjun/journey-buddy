@@ -4,11 +4,16 @@ require 'oj'
 module KakaoApiRequestManager
   REST_API_KEY = ENV['KAKAOTALK_REST_API_KEY']
   LOGIN_CALLBACK_URI = ENV['KAKAOTALK_LOGIN_CALLBACK_URI']
+  REDIRECT_URL = ENV['KAKAOTALK_LOGIN_REDIRECT_URL']
 
   private
 
   def kakao_login_url
     "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=#{REST_API_KEY}&redirect_uri=#{LOGIN_CALLBACK_URI}"
+  end
+
+  def kakao_login_redirect_url
+    REDIRECT_URL
   end
 
   def request_for_token(code)
